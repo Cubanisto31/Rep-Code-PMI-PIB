@@ -1,4 +1,4 @@
-#Code pour l'article PMI-PIB#
+#Code de la partie synthetisation pour l'article PMI-PIB#
 
 library(ggthemes)
 library(ggplot2)
@@ -12,6 +12,19 @@ library(base)
 library(utilities)
 
 
+###############################################################################
+#
+# L'objectif de cette partie est de montrer comment maitriser la synthetisation
+# tout en pointant en CCL les aspects qui peuvent etre ameliores afin de 
+# rendre le
+#
+#
+#
+#
+#
+#
+#
+#
 ############################################################
 ############################################################
 ############################################################
@@ -98,12 +111,13 @@ fra <- dataprep(foo = db,
 #"time.variable=" permet d'indiquer le nom de la variable temporelle
 #"treatment.identifier=" permet d'indiquer la serie que l'on voudra synthetiser
 #"controls.identifier=" permet d'indiquer les series de notre pool donateur
-#"time.optimize.ssr=" permet d'indiquer la periode sur laquelle les coeff de ponderations sont calcules
+#"time.optimize.ssr=" permet d'indiquer la periode sur laquelle les coeff de ponderations sont calcules (impact sur le n de l des matrices Z0 et Z1)
 #"time.plot =" permet de definir la periode sur laquelle les resultats sont indiques
 
 View(fra)
 
 #Affiche les differentes matrices construites en suivant les commandes entrees precedemment
+
 # PARTIE 2 #
 
 #Creation du vecteur de ponderations de la contribution des pays donateurs 
@@ -122,7 +136,64 @@ synth.fra <- synth(data.prep.obj = fra,
 #Axe d'amelioration : Verifier le fonctionnement des differents algos, les tester si cela parait pertinent
 
 
+gaps.synth.fra <- fra$Y1plot - (fra$Y0plot %*% synth.fra$solution.w)
+
+#Permet d'observer les differences de composite sur la periode pre-intervention
+#entre notre France synthetique et notre vraie France
+
+gaps.plot(synth.res = synth.fra,
+           dataprep.res = fra,
+           Ylab = c("Ecart"),
+           Xlab = c("Periodes"),
+             Main = c("Ecart : Traite - Synthetique"))
+
+#Gaps.plot est une fonction du package synth qui permet de tracer. Petit bémol 
+#Cela peut impliquer un changement de forme entre les graphs de ggplot()
+
+#Peut etre plus clair de faire tous nos graphiques avec la meme fonction (ex : ggplot())
+
+# PARTIE 3 #
+
+mse<-((fra$Y1plot - (fra$Y0plot %*% synth.fra$solution.w))^2)
+
+rmse<-0
+
+for (i in 1:244) {rmse<-rmse+mse[i]}
+rmse<-rmse/244
+rmse<-sqrt(rmse)
+
+rmse
+
+#Cette partie permet de comparer la precision de notre estimation 
+#Elle permet de comparer la surface entre entre la courbe de la serie synth 
+#et celle de la vraie serie
+
+#Il serait interessant de trouver un lien entre le rmse lors de la creation 
+#de notre serie synthetique et le rmse de estimation du PIB
+###########################################################
+###########################################################
+###########################################################
 
 
+                 ### CONCLUSION ###
 
-  
+
+###########################################################
+###########################################################
+###########################################################
+
+#La partie ci dessus permet donc de synthetiser des series a partir d'un groupe donateur 
+
+#Afin d'ameliorer la structure de "la machine" on retiendra qu'il :
+
+#  - Faut ameliorer l'importation de la bd
+#  - Faut trouver un moyen de raisonner en date plutot qu'en periode
+#  - Faut supprimer le pays Synth cree dans la bd
+#  - Faut s'accorder sur un moyen pratique de tracer nos series (utiliser la meme fonction)
+
+#Afin d'ameliorer les reglages de "la machine" on retiendra que l'on peut :
+
+#  - Tester en ajoutant des variables predictors 
+#  - Tester d'autres algo d'optimisation que le "BFGS"
+
+
