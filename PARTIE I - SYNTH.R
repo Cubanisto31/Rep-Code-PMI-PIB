@@ -1,4 +1,4 @@
-#Code de la partie synthetisation pour l'article PMI-PIB#
+#Code permettant la synthetisation#
 
 library(ggthemes)
 library(ggplot2)
@@ -12,53 +12,17 @@ library(base)
 library(utilities)
 
 
-###############################################################################
-#
-# L'objectif de cette partie est de montrer comment maitriser la synthetisation
-# tout en pointant en CCL les aspects qui peuvent etre ameliores afin de 
-# rendre le
-#
-#
-#
-#
-#
-#
-#
-#
-############################################################
-############################################################
-############################################################
+################################################################################
+#                                                                              #
+# L'objectif de cette partie est de montrer comment maitriser la synthetisation#
+# tout en pointant en CCL les aspects qui peuvent etre ameliores afin de       #
+# rendre le code plus souple                                                   #
+#                                                                              #
+################################################################################
 
-               #PARTIE BASE DE DONNEES#
+#Ce code doit etre lance apres le code "PARTIE 0 - DATA.R"
 
-############################################################
-############################################################
-############################################################
-
-
-#Axes d'ameliorations : 
-# (i) Ne sachant pas comment importer un excel ayant plusieurs feuilles et bien
-# la traiter
-#et (ii) ne sachant pas comment faire pour considerer les dates en "dates"
-
-# -> J'ai decide de tout fusionner dans une page d'excel et de creer une nouvelle 
-#variable "periodes" pour pouvoir traiter ces infos.
-
-#Tout ce travail a ete fait prealablement sur excel
-
-#/!\ REMIND : un "pays" Synth a ete creer dans la bd pour faciliter la synthetisation, 
-#il sera peut etre amene a disparaitre inutile
-
-db <- read_excel("~/M2 PP/Memoire M2/Memoire algo/Base sans NZ v2.xlsx")
-
-#Apres verification a la louche il semblerait que toutes les variables soient
-#numeriques
-
-#La base de donnees est au format "tibble" il faut donc la transformer en 
-#data frame pour pouvoir la synthetiser
-
-db <-as.data.frame(db)
-
+source("PARTIE 0 - DATA.R")
 
 
 ############################################################
@@ -106,7 +70,7 @@ fra <- dataprep(foo = db,
 #"predictors.op=" permet d'indiquer la methode de synthetisation (moyenne par default)
 #"time.predictors.op =" permet d'indiquer la periode sur laquelle on synthetisera
 #"dependent ="  permet d'indiquer quelle variable sera synthetisee
-#"unit.variable=" permet d'indiquer le nom de la variable numérique qui sert a identifier les series
+#"unit.variable=" permet d'indiquer le nom de la variable num?rique qui sert a identifier les series
 #"unit.names.variable=" permet d'indiquer le nom de la variable alpha qui sert a identifier les series
 #"time.variable=" permet d'indiquer le nom de la variable temporelle
 #"treatment.identifier=" permet d'indiquer la serie que l'on voudra synthetiser
@@ -147,7 +111,7 @@ gaps.plot(synth.res = synth.fra,
            Xlab = c("Periodes"),
              Main = c("Ecart : Traite - Synthetique"))
 
-#Gaps.plot est une fonction du package synth qui permet de tracer. Petit bémol 
+#Gaps.plot est une fonction du package synth qui permet de tracer. Petit b?mol 
 #Cela peut impliquer un changement de forme entre les graphs de ggplot()
 
 #Peut etre plus clair de faire tous nos graphiques avec la meme fonction (ex : ggplot())
