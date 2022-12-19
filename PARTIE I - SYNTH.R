@@ -16,7 +16,7 @@ library(utilities)
 #                                                                              #
 # L'objectif de cette partie est de montrer comment maitriser la synthetisation#
 # tout en pointant en CCL les aspects qui peuvent etre ameliores afin de       #
-# rendre le code plus souple                                                   #
+# rendre le code plus souple.                                                   #
 #                                                                              #
 ################################################################################
 
@@ -40,47 +40,29 @@ source("PARTIE 0 - DATA.R")
 #La fonction dataprep() du package Synth permet de creer des sous-bases pour 
 #automatiser et faciliter la synthetisation
 
-fra <- dataprep(foo = db,
-             predictors = "composite" ,
+fra <- dataprep(foo = PMI,
+             predictors = "Composite" ,
              predictors.op = "mean" ,
              time.predictors.prior = 9:252,
-             
-             
-             dependent = "composite",
-             unit.variable = "paysnum",
-             unit.names.variable = "paysnom",
-             time.variable = "periodes",
-             treatment.identifier = 1,
-             controls.identifier = c(2:5),
+             dependent = "Composite",
+             unit.variable = "Pays_num",
+             unit.names.variable = "Pays_nom",
+             time.variable = "Periodes",
+             treatment.identifier = 2,
+             controls.identifier = c(3:5),
              time.optimize.ssr = 9:252,
-             time.plot = 9:252
+             time.plot = 1:252
 )
 
 #Axes d'ameliorations :
 
-# (i) chercher a faire tourner la fonction avec les dates et non des periodes
-#(ii) faire tourner avec d'autres variables predictors, pour constater la potentielle
+#(i) faire tourner avec d'autres variables predictors, pour constater la potentielle
 #amelioration de l'estimation (Hyp: elle sera forcemment plus precise car elle est 
 #au moins aussi precise que l'estimation qui considere seulement la variable composite)
 
+#(ii) completer la df pour faire tourner avec plus de pays donateurs sur des
+#periodes plus grandes
 
-#Pi : 
-#"foo =" indique la base de donnees dans laquelle on travaille
-#"predictors =" permet d'indiquer a partir de quel(les) variable(s) on realisera la synth
-#"predictors.op=" permet d'indiquer la methode de synthetisation (moyenne par default)
-#"time.predictors.op =" permet d'indiquer la periode sur laquelle on synthetisera
-#"dependent ="  permet d'indiquer quelle variable sera synthetisee
-#"unit.variable=" permet d'indiquer le nom de la variable num?rique qui sert a identifier les series
-#"unit.names.variable=" permet d'indiquer le nom de la variable alpha qui sert a identifier les series
-#"time.variable=" permet d'indiquer le nom de la variable temporelle
-#"treatment.identifier=" permet d'indiquer la serie que l'on voudra synthetiser
-#"controls.identifier=" permet d'indiquer les series de notre pool donateur
-#"time.optimize.ssr=" permet d'indiquer la periode sur laquelle les coeff de ponderations sont calcules (impact sur le n de l des matrices Z0 et Z1)
-#"time.plot =" permet de definir la periode sur laquelle les resultats sont indiques
-
-View(fra)
-
-#Affiche les differentes matrices construites en suivant les commandes entrees precedemment
 
 # PARTIE 2 #
 
@@ -97,7 +79,9 @@ synth.fra <- synth(data.prep.obj = fra,
 
 #Le BFGS est le quasi-Newton algorithm
 
-#Axe d'amelioration : Verifier le fonctionnement des differents algos, les tester si cela parait pertinent
+#Axes d'amelioration : 
+
+#(i) Verifier le fonctionnement des differents algos, les tester si cela parait pertinent
 
 
 gaps.synth.fra <- fra$Y1plot - (fra$Y0plot %*% synth.fra$solution.w)
@@ -111,7 +95,7 @@ gaps.plot(synth.res = synth.fra,
            Xlab = c("Periodes"),
              Main = c("Ecart : Traite - Synthetique"))
 
-#Gaps.plot est une fonction du package synth qui permet de tracer. Petit b?mol 
+#Gaps.plot est une fonction du package synth qui permet de tracer. Petit bemol 
 #Cela peut impliquer un changement de forme entre les graphs de ggplot()
 
 #Peut etre plus clair de faire tous nos graphiques avec la meme fonction (ex : ggplot())
@@ -150,10 +134,7 @@ rmse
 
 #Afin d'ameliorer la structure de "la machine" on retiendra qu'il :
 
-#  - Faut ameliorer l'importation de la bd
-#  - Faut trouver un moyen de raisonner en date plutot qu'en periode
-#  - Faut supprimer le pays Synth cree dans la bd
-#  - Faut s'accorder sur un moyen pratique de tracer nos series (utiliser la meme fonction)
+#  - Faut definir un moyen pratique de tracer nos series (utiliser la meme fonction)
 
 #Afin d'ameliorer les reglages de "la machine" on retiendra que l'on peut :
 

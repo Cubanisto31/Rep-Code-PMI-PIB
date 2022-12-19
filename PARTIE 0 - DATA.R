@@ -15,7 +15,7 @@ library(utilities)
 ###############################################################################
 #                                                                             #
 # L'objectif de cette partie est d'ouvrir et de mettre en forme la base de    #
-# donnees "PMI" qui servira a la suite de notre recherche.                    #
+# donnees "PMI" qui servira a la suite de notre etudes.                       #
 #                                                                             #
 ###############################################################################
 
@@ -434,18 +434,52 @@ PMI_Egy <- PMI_Egy[c(6:257),]
 
 #Fusion de toutes ces df 
 
-Pays <- c(rep("Euro", 252), rep("Fra", 252), rep("All", 252), rep("Ita", 252)
+Periodes <- rep(1:252, 21)
+
+Pays_nom <- c(rep("Euro", 252), rep("Fra", 252), rep("All", 252), rep("Ita", 252)
          , rep("Esp", 252), rep("UK", 252), rep("USA", 252), rep("Chi", 252)
          , rep("Ind", 252), rep("Bra", 252), rep("Jap", 252), rep("Rus", 252)
          , rep("Pol", 252), rep("Mex", 252), rep("Can", 252), rep("Tur", 252)
          , rep("Hol", 252), rep("Aus", 252), rep("Indo", 252), rep("NZ", 252)
          , rep("Egy", 252))
 
+Pays_num <- c(rep(1:21, each = 252))
+
 PMI <- rbind(PMI_euro,PMI_Fra,PMI_All,PMI_Ita,PMI_Esp,PMI_UK,PMI_USA,PMI_Chi
              ,PMI_Ind,PMI_Bra,PMI_Jap,PMI_Rus,PMI_Pol,PMI_Mex,PMI_Can,PMI_Tur
              ,PMI_Hol,PMI_Aus,PMI_Indo,PMI_NZ,PMI_Egy)
 
-PMI <- cbind(Pays, PMI)
+
+PMI <- cbind(Periodes, PMI)
+PMI <- cbind(Pays_nom, PMI)
+PMI <- cbind(Pays_num, PMI)
 
 #############################################################
 
+#Supprimer les bases qui seront inutiles 
+
+rm(PMI_euro)
+rm(PMI_Fra)
+rm(PMI_All)
+rm(PMI_Ita)
+rm(PMI_Esp)
+rm(PMI_UK)
+rm(PMI_USA)
+rm(PMI_Chi)
+rm(PMI_Ind)
+rm(PMI_Bra)
+rm(PMI_Jap)
+rm(PMI_Rus)
+rm(PMI_Pol)
+rm(PMI_Mex)
+rm(PMI_Can)
+rm(PMI_Tur)
+rm(PMI_Hol)
+rm(PMI_Aus)
+rm(PMI_Indo)
+rm(PMI_NZ)
+rm(PMI_Egy)
+
+rm(Pays_nom)
+rm(Pays_num)
+rm(Periodes)
