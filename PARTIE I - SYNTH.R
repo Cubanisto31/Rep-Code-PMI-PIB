@@ -16,7 +16,7 @@ library(utilities)
 #                                                                              #
 # L'objectif de cette partie est de montrer comment maitriser la synthetisation#
 # tout en pointant en CCL les aspects qui peuvent etre ameliores afin de       #
-# rendre le code plus souple.                                                   #
+# rendre le code plus souple.                                                  #
 #                                                                              #
 ################################################################################
 
@@ -50,8 +50,8 @@ fra <- dataprep(foo = PMI,
              time.variable = "Periodes",
              treatment.identifier = 2,
              controls.identifier = c(3:5),
-             time.optimize.ssr = 9:252,
-             time.plot = 1:252
+             time.optimize.ssr = 50:252,
+             time.plot = 9:252
 )
 
 #Axes d'ameliorations :
@@ -94,6 +94,12 @@ gaps.plot(synth.res = synth.fra,
            Ylab = c("Ecart"),
            Xlab = c("Periodes"),
              Main = c("Ecart : Traite - Synthetique"))
+
+################################
+# BROUILLON AVANT INTEGRATION DANS LE CODE
+
+
+
 
 #Gaps.plot est une fonction du package synth qui permet de tracer. Petit bemol 
 #Cela peut impliquer un changement de forme entre les graphs de ggplot()
