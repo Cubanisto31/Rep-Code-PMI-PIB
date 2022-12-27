@@ -72,7 +72,7 @@ fra <- dataprep(foo = PMI,
 #Creation du vecteur de ponderations de la contribution des variables Predictors 
 #"Solution v" (=1 car seulement "Composite")
 
-synth.fra <- synth(data.prep.obj = fra,
+list.synth.fra <- synth(data.prep.obj = fra,
                            method = "BFGS")
 
 #Pi : Il est possible d'utiliser plusieurs algos d'optimisation c("Nelder-Mead', 'BFGS', 'CG', 'L-BFGS-B', 'nlm', 'nlminb', 'spg', and 'ucminf")
@@ -83,13 +83,14 @@ synth.fra <- synth(data.prep.obj = fra,
 
 #(i) Verifier le fonctionnement des differents algos, les tester si cela parait pertinent
 
+serie.synth.fra <- fra$Y0plot %*% list.synth.fra$solution.w
 
-gaps.synth.fra <- fra$Y1plot - (fra$Y0plot %*% synth.fra$solution.w)
+gaps.list.synth.fra <- fra$Y1plot - serie.synth.fra
 
 #Permet d'observer les differences de composite sur la periode pre-intervention
 #entre notre France synthetique et notre vraie France
 
-gaps.plot(synth.res = synth.fra,
+gaps.plot(synth.res = list.synth.fra,
            dataprep.res = fra,
            Ylab = c("Ecart"),
            Xlab = c("Periodes"),
@@ -98,6 +99,9 @@ gaps.plot(synth.res = synth.fra,
 ################################
 # BROUILLON AVANT INTEGRATION DANS LE CODE
 
+fra.plot <- cbind(serie.synth.fra, gaps.list.synth.fra) %>% as.data.frame %>% 
+  rename_at(vars(w.weight, 2), ~ c("Serie synthetique de la France ",
+                                   "Serie reelle de la France"))
 
 
 
@@ -108,7 +112,7 @@ gaps.plot(synth.res = synth.fra,
 
 # PARTIE 3 #
 
-mse<-((fra$Y1plot - (fra$Y0plot %*% synth.fra$solution.w))^2)
+mse<-((fra$Y1plot - (fra$Y0plot %*% list.synth.fra$solution.w))^2)
 
 rmse<-0
 
