@@ -98,12 +98,15 @@ gaps.plot(synth.res = list.synth.fra,
 
 ################################
 # BROUILLON AVANT INTEGRATION DANS LE CODE
+date.plot <- PMI$Date[c(9:252)]
 
-fra.plot <- cbind(serie.synth.fra, gaps.list.synth.fra) %>% as.data.frame %>% 
-  rename_at(vars(w.weight, 2), ~ c("Serie synthetique de la France ",
-                                   "Serie reelle de la France"))
+fra.plot <- cbind(date.plot, serie.synth.fra, gaps.list.synth.fra) %>% as.data.frame
+
+colnames(fra.plot) <- c("Dates", "Serie synthetique de la France ",
+                        "Serie reelle de la France") 
 
 
+ggplot(fra.plot, )
 
 #Gaps.plot est une fonction du package synth qui permet de tracer. Petit bemol 
 #Cela peut impliquer un changement de forme entre les graphs de ggplot()
