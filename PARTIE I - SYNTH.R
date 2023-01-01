@@ -87,33 +87,57 @@ serie.synth.fra <- fra$Y0plot %*% list.synth.fra$solution.w
 
 gaps.list.synth.fra <- fra$Y1plot - serie.synth.fra
 
-#Permet d'observer les differences de composite sur la periode pre-intervention
-#entre notre France synthetique et notre vraie France
+# PARTIE 3 #
 
+#Tracer les graphiques pour visualiser les ecarts entre les series reelles 
+# et les series synthetiques
+
+
+#Avec fonction du package(Synth)
+#Ecart
 gaps.plot(synth.res = list.synth.fra,
            dataprep.res = fra,
            Ylab = c("Ecart"),
            Xlab = c("Periodes"),
              Main = c("Ecart : Traite - Synthetique"))
 
-################################
-# BROUILLON AVANT INTEGRATION DANS LE CODE
+#Avec fonction ggplot 
+#Ecart
 date.plot <- PMI$Date[c(9:252)]
+gaps.list.synth.fra <- gaps.list.synth.fra
 
-fra.plot <- cbind(date.plot, serie.synth.fra, gaps.list.synth.fra) %>% as.data.frame
+ecart.fra.plot <- data.frame(date.plot, as.numeric(gaps.list.synth.fra))
+colnames(ecart.fra.plot) <- c("Dates", "Ecarts")
 
-colnames(fra.plot) <- c("Dates", "Serie synthetique de la France ",
-                        "Serie reelle de la France") 
+ggplot(ecart.fra.plot, aes(Dates)) +
+  geom_line(aes(y = Ecarts)) +
+  geom_hline(yintercept=(0),linetype="dotted")+
+  xlab("Dates")+
+  ylab("Ecarts")
+theme_classic()
+
+#Tracer la serie reelle et la serie synth
+date.plot <- PMI$Date[c(9:252)]
+serie.reelle.fra <- fra$Y1plot
+serie.synth.fra <- serie.synth.fra 
+
+fra.plot <- data.frame(date.plot, as.numeric(serie.reelle.fra), as.numeric(serie.synth.fra))
+colnames(fra.plot) <- c("Dates", "Synth", "Reelle") 
 
 
-ggplot(fra.plot, )
+ggplot(fra.plot, aes(Dates)) +
+  geom_line(aes(y = Synth), color = "blue") +
+  geom_line(aes(y = Reelle), color = "red") +
+  geom_hline(yintercept=(50),linetype="dotted")+
+  xlab("Dates")+
+  ylab("Composite")
+  theme_classic()
 
-#Gaps.plot est une fonction du package synth qui permet de tracer. Petit bemol 
-#Cela peut impliquer un changement de forme entre les graphs de ggplot()
+#Axe d'amelioration : Lorsque je nomme les colonnes par seulement une lettre,
+  #j'obtiens un graph sur fond blanc (plus clean pour exporter)
+  
 
-#Peut etre plus clair de faire tous nos graphiques avec la meme fonction (ex : ggplot())
-
-# PARTIE 3 #
+# PARTIE 4 #
 
 mse<-((fra$Y1plot - (fra$Y0plot %*% list.synth.fra$solution.w))^2)
 
@@ -154,4 +178,4 @@ rmse
 #  - Tester en ajoutant des variables predictors 
 #  - Tester d'autres algo d'optimisation que le "BFGS"
 
-
+#Ne pas oublier de supprimer tous les objets qui ne servent qu'a la construction
