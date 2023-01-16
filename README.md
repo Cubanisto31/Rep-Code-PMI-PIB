@@ -15,3 +15,5 @@ Ce depôt contient les éléments relatifs au travail sur données dans le cadre
 4° Le code permettant de réaliser une régression linéaire pour vérifier la proximité avec notre synthétisation -> PARTIE II - REGRESSION.R
 
 5° Le code permettant de réaliser l'estimation du PIB -> PARTIE III - ESTIMATION.R
+
+6° Les commentaires de Benjamin Michallet et Germain Marchand au sujet des axes d'ameliorations
