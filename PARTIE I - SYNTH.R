@@ -35,6 +35,10 @@ source("PARTIE 0 - DATA.R")
 ############################################################
 ############################################################
 
+# PARTIE 0 #
+#Initialisation du programme 
+
+
 # PARTIE 1 #
 
 #La fonction dataprep() du package Synth permet de creer des sous-bases pour 
@@ -136,10 +140,17 @@ ggplot(fra.plot, aes(Dates)) +
 #Axe d'amelioration : Lorsque je nomme les colonnes par seulement une lettre,
   #j'obtiens un graph sur fond blanc (plus clean pour exporter)
   
-
+  
+#Axe d'amelioration : Une fois que le code est termine, changer le code en y 
+  # integrant des variables generiques et expliquer en amont les donnees que 
+  #l'on doit attribuer aux variables pour effectuer les differents tests
+  
 # PARTIE 4 #
+  
+#Calcul de l'erreur quadratique moyenne entre la serie reelle et la serie 
+  #synthetisee
 
-mse<-((fra$Y1plot - (fra$Y0plot %*% list.synth.fra$solution.w))^2)
+mse <- (gaps.list.synth.fra)^2
 
 rmse<-0
 
@@ -147,14 +158,17 @@ for (i in 1:244) {rmse<-rmse+mse[i]}
 rmse<-rmse/244
 rmse<-sqrt(rmse)
 
-rmse
+View(rmse)
 
-#Cette partie permet de comparer la precision de notre estimation 
+#L'erreur quadratique moyenne permet de comparer la precision de notre synthetisation 
+
 #Elle permet de comparer la surface entre entre la courbe de la serie synth 
-#et celle de la vraie serie
+#et celle de la serie reelle
 
-#Il serait interessant de trouver un lien entre le rmse lors de la creation 
-#de notre serie synthetique et le rmse de estimation du PIB
+#Axe d'amelioration : Il serait interessant de trouver un lien entre le rmse 
+#lors de la creation de notre serie synthetique et le rmse de estimation du PIB
+
+
 ###########################################################
 ###########################################################
 ###########################################################
@@ -169,11 +183,13 @@ rmse
 
 #La partie ci dessus permet donc de synthetiser des series a partir d'un groupe donateur 
 
-#Afin d'ameliorer la structure de "la machine" on retiendra qu'il :
+#Afin d'ameliorer la structure du programme :
 
-#  - Faut definir un moyen pratique de tracer nos series (utiliser la meme fonction)
+#  - Trouver un moyen de faciliter au maximum la realisation de differents
+#tests en automatisant l'entree des inputs en amont 
+#(ex: pays test, groupe donateur, periode) 
 
-#Afin d'ameliorer les reglages de "la machine" on retiendra que l'on peut :
+#Afin d'ameliorer les reglages du programme :
 
 #  - Tester en ajoutant des variables predictors 
 #  - Tester d'autres algo d'optimisation que le "BFGS"
