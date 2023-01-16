@@ -2,7 +2,7 @@
 
 Ce depôt contient les éléments relatifs au travail sur données dans le cadre de l'article PMI-PIB. 
 
-Il contient :
+**Il contient :**
 
 0° Le mémoire portant sur ce sujet réalisé dans le cadre du M2PP -> Memoire M2 Paul FAVIER.pdf
 
