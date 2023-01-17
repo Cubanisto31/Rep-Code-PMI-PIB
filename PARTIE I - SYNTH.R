@@ -188,6 +188,7 @@ View(rmse)
 #  - Trouver un moyen de faciliter au maximum la realisation de differents
 #tests en automatisant l'entree des inputs en amont 
 #(ex: pays test, groupe donateur, periode) 
+#  - Faire apparaitre facilement la ponderation des differents pays donateurs
 
 #Afin d'ameliorer les reglages du programme :
 
