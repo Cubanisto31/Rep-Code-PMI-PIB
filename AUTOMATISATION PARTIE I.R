@@ -29,7 +29,7 @@ source("PARTIE 0 - DATA.R")
 ############################################################
 ############################################################
 
-              #PARTIE SYNTHETISATION#
+#PARTIE SYNTHETISATION#
 
 ############################################################
 ############################################################
@@ -71,6 +71,10 @@ pays.don9
 # - la variable predictive (predictors)
 # - la methode de prediction utilisee (predictors.op)
 
+auto <- function(timepp,traitement, 
+                 controlsid, timeoptssr,timeplot
+                 ){
+  
 
 
 # PARTIE 1 #
@@ -79,22 +83,29 @@ pays.don9
 #automatiser et faciliter la synthetisation
 
 fra <- dataprep(foo = PMI,
-             predictors = "Composite" ,
-             predictors.op = "mean" ,
-             time.predictors.prior = 9:252,
-             dependent = "Composite",
-             unit.variable = "Pays_num",
-             unit.names.variable = "Pays_nom",
-             time.variable = "Periodes",
-             treatment.identifier = 2,
-             controls.identifier = c(3:5),
-             time.optimize.ssr = 50:252,
-             time.plot = 9:252
+                predictors = "Composite" ,
+                predictors.op = "mean" ,
+                time.predictors.prior = timepp,
+                dependent = "Composite",
+                unit.variable = "Pays_num",
+                unit.names.variable = "Pays_nom",
+                time.variable = "Periodes",
+                treatment.identifier = traitement,
+                controls.identifier = controlsid,
+                time.optimize.ssr = timeoptssr,
+                time.plot = timeplot
 )
 
+return(fra)
+}
+
+auto(9:252, 2, c(3:5), 50:252, 9:252)
+
+fratest <- auto(9:252, 2, c(3:5), 50:252, 9:252)
 #Axes d'ameliorations :
 
-#(i) faire tourner avec d'autres variables predictors, pour constater la potentielle
+#(i) faire tourner avec d'autres variables predictors (special predictors period),
+#pour constater la potentielle
 #amelioration de l'estimation (Hyp: elle sera forcemment plus precise car elle est 
 #au moins aussi precise que l'estimation qui considere seulement la variable composite)
 
@@ -111,7 +122,7 @@ fra <- dataprep(foo = PMI,
 #"Solution v" (=1 car seulement "Composite")
 
 list.synth.fra <- synth(data.prep.obj = fra,
-                           method = "BFGS")
+                        method = "BFGS")
 
 #Pi : Il est possible d'utiliser plusieurs algos d'optimisation c("Nelder-Mead', 'BFGS', 'CG', 'L-BFGS-B', 'nlm', 'nlminb', 'spg', and 'ucminf")
 
@@ -134,10 +145,10 @@ gaps.list.synth.fra <- fra$Y1plot - serie.synth.fra
 #Avec fonction du package(Synth)
 #Ecart
 gaps.plot(synth.res = list.synth.fra,
-           dataprep.res = fra,
-           Ylab = c("Ecart"),
-           Xlab = c("Periodes"),
-             Main = c("Ecart : Traite - Synthetique"))
+          dataprep.res = fra,
+          Ylab = c("Ecart"),
+          Xlab = c("Periodes"),
+          Main = c("Ecart : Traite - Synthetique"))
 
 #Avec fonction ggplot 
 #Ecart
@@ -169,20 +180,20 @@ ggplot(fra.plot, aes(Dates)) +
   geom_hline(yintercept=(50),linetype="dotted")+
   xlab("Dates")+
   ylab("Composite")
-  theme_classic()
+theme_classic()
 
 #Axe d'amelioration : Lorsque je nomme les colonnes par seulement une lettre,
-  #j'obtiens un graph sur fond blanc (plus clean pour exporter)
-  
-  
+#j'obtiens un graph sur fond blanc (plus clean pour exporter)
+
+
 #Axe d'amelioration : Une fois que le code est termine, changer le code en y 
-  # integrant des variables generiques et expliquer en amont les donnees que 
-  #l'on doit attribuer aux variables pour effectuer les differents tests
-  
+# integrant des variables generiques et expliquer en amont les donnees que 
+#l'on doit attribuer aux variables pour effectuer les differents tests
+
 # PARTIE 4 #
-  
+
 #Calcul de l'erreur quadratique moyenne entre la serie reelle et la serie 
-  #synthetisee
+#synthetisee
 
 mse <- (gaps.list.synth.fra)^2
 
@@ -208,7 +219,7 @@ View(rmse)
 ###########################################################
 
 
-                 ### CONCLUSION ###
+### CONCLUSION ###
 
 
 ###########################################################
