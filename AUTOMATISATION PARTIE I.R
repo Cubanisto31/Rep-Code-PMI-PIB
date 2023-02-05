@@ -38,23 +38,13 @@ source("PARTIE 0 - DATA.R")
 # PARTIE 0 #
 #Initialisation du programme 
 
-#Entrer le nom du pays dont on veut synthetiser la serie
 
-pays.synth <- PMI[c(pays_nom ="XXX"),]
 
-#Entrer les noms des pays qui constitueront notre groupe donateur 
+ 
 
 #Le mieux serait de rentrer les pays que l'on veut voir apparaitre dans un 
 #vecteur puis automatiser l'attribution des noms pays.don 
-pays.don1
-pays.don2
-pays.don3
-pays.don4
-pays.don5
-pays.don6
-pays.don7
-pays.don8
-pays.don9
+
 
 #Entrer l'intervalle de periodes sur lequel on determine les coeff de ponderation 
 #L'ideal serait d'avoir a rentrer les dates puis d'obtenir les periodes associees
@@ -71,8 +61,8 @@ pays.don9
 # - la variable predictive (predictors)
 # - la methode de prediction utilisee (predictors.op)
 
-auto <- function(timepp,traitement, 
-                 controlsid, timeoptssr,timeplot
+auto <- function(traitement, controlsid, timepp, 
+                  timeoptssr,timeplot
                  ){
   
 
@@ -82,7 +72,7 @@ auto <- function(timepp,traitement,
 #La fonction dataprep() du package Synth permet de creer des sous-bases pour 
 #automatiser et faciliter la synthetisation
 
-fra <- dataprep(foo = PMI,
+dataprep <- dataprep(foo = PMI,
                 predictors = "Composite" ,
                 predictors.op = "mean" ,
                 time.predictors.prior = timepp,
@@ -96,12 +86,19 @@ fra <- dataprep(foo = PMI,
                 time.plot = timeplot
 )
 
-return(fra)
+return(dataprep)
 }
 
-auto(9:252, 2, c(3:5), 50:252, 9:252)
+# /!\ CLARIFIER ET PRECISER LE ROLE DE 3 ET 4
 
-fratest <- auto(9:252, 2, c(3:5), 50:252, 9:252)
+# En 1) Entrer le num du pays dont on veut synthetiser la serie (cf. PMI$Pays_num)
+# En 2) Entrer les nums des pays qui constitueront notre groupe donateur (cf. PMI$Pays_num)
+# En 3) Entrer la periode 
+# En 4) Entrer la periode sur laquelle on va 
+# En 5) Entrer la periode sur laquelle on va tracer notre synthetisation 
+auto(2 , c(3:5), 9:252, 50:252, 9:252)
+
+test <- auto(2 ,c(3:5) ,9:252, 50:252, 9:252)
 #Axes d'ameliorations :
 
 #(i) faire tourner avec d'autres variables predictors (special predictors period),
