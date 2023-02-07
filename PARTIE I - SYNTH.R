@@ -14,8 +14,10 @@ library(utilities)
 
 ################################################################################
 #                                                                              #
-# L'objectif de cette partie est de montrer comment maitriser la synthetisation#
-# tout en pointant en CCL les aspects qui peuvent etre ameliores afin de       #
+# L'objectif de cette partie est de realiser la synthetisation d'un pays au    #
+# choix a partir d'un groupe donateur au choix sur une periode au choix afin   #
+# de d'effectuer un maximum de tests.                                          #
+# Le tout en pointant identifiant en CCL les aspects qui peuvent etre ameliores#
 # rendre le code plus souple.                                                  #
 #                                                                              #
 ################################################################################
@@ -29,77 +31,75 @@ source("PARTIE 0 - DATA.R")
 ############################################################
 ############################################################
 
-              #PARTIE SYNTHETISATION#
+#PARTIE SYNTHETISATION#
 
 ############################################################
 ############################################################
 ############################################################
+
 
 # PARTIE 0 #
-#Initialisation du programme 
-
-#Entrer le nom du pays dont on veut synthetiser la serie
-
-pays.synth <- PMI[c(pays_nom ="XXX"),]
-
-#Entrer les noms des pays qui constitueront notre groupe donateur 
-
-#Le mieux serait de rentrer les pays que l'on veut voir apparaitre dans un 
-#vecteur puis automatiser l'attribution des noms pays.don 
-pays.don1
-pays.don2
-pays.don3
-pays.don4
-pays.don5
-pays.don6
-pays.don7
-pays.don8
-pays.don9
-
-#Entrer l'intervalle de periodes sur lequel on determine les coeff de ponderation 
-#L'ideal serait d'avoir a rentrer les dates puis d'obtenir les periodes associees
-#pour realiser la synhtetisation 
 
 
-#Entrer l'intervalle de periodes sur lequel on trace notre serie
-#L'ideal serait d'avoir a rentrer les dates puis d'obtenir les periodes associees
-#pour realiser la synhtetisation 
+selection <- function(traitement, controlsid, timepp, 
+                      timeoptssr,timeplot
+){
+  
+  
+  
+  # PARTIE 1 #
+  
+  #La fonction dataprep() du package Synth permet de creer des sous-bases pour 
+  #automatiser et faciliter la synthetisation
+  
+  dataprep <- dataprep(foo = PMI,
+                       predictors = "Composite" ,
+                       predictors.op = "mean" ,
+                       time.predictors.prior = timepp,
+                       dependent = "Composite",
+                       unit.variable = "Pays_num",
+                       unit.names.variable = "Pays_nom",
+                       time.variable = "Periodes",
+                       treatment.identifier = traitement,
+                       controls.identifier = controlsid,
+                       time.optimize.ssr = timeoptssr,
+                       time.plot = timeplot
+  )
+  
+  return(dataprep)
+  return(timeplot)
+}
 
-# PARTIE 0bis #
+# /!\ CLARIFIER ET PRECISER LE ROLE DE 3 car il semblerait que sa modification n'ait 
+#pas d'impact sur la construction de dataprep.
 
-#Il est possible de realiser des synthetisations differentes en changeant :
-# - la variable predictive (predictors)
-# - la methode de prediction utilisee (predictors.op)
+# En 1) Entrer le num du pays dont on veut synthetiser la serie (cf. PMI$Pays_num)
+# En 2) Entrer les nums des pays qui constitueront notre groupe donateur (cf. PMI$Pays_num)
+# En 3) Entrer la periode prise en compte pour minimiser le MSPE (cote pool donateur)
+# En 4) Entrer la periode prise en compte pour minimiser le MSPE (cote pays traite) 
+# En 5) Entrer la periode sur laquelle on va tracer notre synthetisation 
 
 
+test <- selection(2 ,c(3:5) ,9:252, 50:252, 9:252)
 
-# PARTIE 1 #
+timeplot <- test$tag$time.plot
 
-#La fonction dataprep() du package Synth permet de creer des sous-bases pour 
-#automatiser et faciliter la synthetisation
 
-fra <- dataprep(foo = PMI,
-             predictors = "Composite" ,
-             predictors.op = "mean" ,
-             time.predictors.prior = 9:252,
-             dependent = "Composite",
-             unit.variable = "Pays_num",
-             unit.names.variable = "Pays_nom",
-             time.variable = "Periodes",
-             treatment.identifier = 2,
-             controls.identifier = c(3:5),
-             time.optimize.ssr = 50:252,
-             time.plot = 9:252
-)
 
 #Axes d'ameliorations :
 
-#(i) faire tourner avec d'autres variables predictors, pour constater la potentielle
+#(i) faire tourner avec d'autres variables predictors (special predictors period),
+#pour constater la potentielle
 #amelioration de l'estimation (Hyp: elle sera forcemment plus precise car elle est 
 #au moins aussi precise que l'estimation qui considere seulement la variable composite)
 
 #(ii) completer la df pour faire tourner avec plus de pays donateurs sur des
 #periodes plus grandes
+
+#(iii) Il est possible de realiser des synthetisations differentes en changeant :
+# - la variable predictive (predictors)
+# - la methode de prediction utilisee (predictors.op)
+
 
 
 # PARTIE 2 #
@@ -110,8 +110,8 @@ fra <- dataprep(foo = PMI,
 #Creation du vecteur de ponderations de la contribution des variables Predictors 
 #"Solution v" (=1 car seulement "Composite")
 
-list.synth.fra <- synth(data.prep.obj = fra,
-                           method = "BFGS")
+list.synth.test <- synth(data.prep.obj = test,
+                         method = "BFGS")
 
 #Pi : Il est possible d'utiliser plusieurs algos d'optimisation c("Nelder-Mead', 'BFGS', 'CG', 'L-BFGS-B', 'nlm', 'nlminb', 'spg', and 'ucminf")
 
@@ -121,9 +121,15 @@ list.synth.fra <- synth(data.prep.obj = fra,
 
 #(i) Verifier le fonctionnement des differents algos, les tester si cela parait pertinent
 
-serie.synth.fra <- fra$Y0plot %*% list.synth.fra$solution.w
 
-gaps.list.synth.fra <- fra$Y1plot - serie.synth.fra
+#Creation du vecteur de valeurs de la serie synthetique 
+
+serie.synth.test <- test$Y0plot %*% list.synth.test$solution.w
+
+#Creation du vecteur de la difference pour chaque valeur entre la serie reelle 
+#et la serie synthetique
+
+gaps.list.synth.test <- test$Y1plot - serie.synth.test
 
 # PARTIE 3 #
 
@@ -133,82 +139,106 @@ gaps.list.synth.fra <- fra$Y1plot - serie.synth.fra
 
 #Avec fonction du package(Synth)
 #Ecart
-gaps.plot(synth.res = list.synth.fra,
-           dataprep.res = fra,
-           Ylab = c("Ecart"),
-           Xlab = c("Periodes"),
-             Main = c("Ecart : Traite - Synthetique"))
+gaps.plot(synth.res = list.synth.test,
+          dataprep.res = test,
+          Ylab = c("Ecart"),
+          Xlab = c("Periodes"),
+          Main = c("Ecart : Traite - Synthetique"))
 
 #Avec fonction ggplot 
 #Ecart
-date.plot <- PMI$Date[c(9:252)]
-gaps.list.synth.fra <- gaps.list.synth.fra
+date.plot <- PMI$Date[timeplot]
+gaps.list.synth.test <- gaps.list.synth.test
 
-ecart.fra.plot <- data.frame(date.plot, as.numeric(gaps.list.synth.fra))
-colnames(ecart.fra.plot) <- c("Dates", "Ecarts")
+ecart.test.plot <- data.frame(date.plot, as.numeric(gaps.list.synth.test))
+colnames(ecart.test.plot) <- c("Dates", "Ecarts")
 
-ggplot(ecart.fra.plot, aes(Dates)) +
+ggplot(ecart.test.plot, aes(Dates)) +
   geom_line(aes(y = Ecarts)) +
   geom_hline(yintercept=(0),linetype="dotted")+
   xlab("Dates")+
-  ylab("Ecarts")
-theme_classic()
+  ylab("Ecarts")+
+  theme_classic()
 
 #Tracer la serie reelle et la serie synth
-date.plot <- PMI$Date[c(9:252)]
-serie.reelle.fra <- fra$Y1plot
-serie.synth.fra <- serie.synth.fra 
+date.plot <- PMI$Date[c(timeplot)]
+serie.reelle.test <- test$Y1plot
+serie.synth.test <- serie.synth.test 
 
-fra.plot <- data.frame(date.plot, as.numeric(serie.reelle.fra), as.numeric(serie.synth.fra))
-colnames(fra.plot) <- c("Dates", "Synth", "Reelle") 
+test.plot <- data.frame(date.plot, as.numeric(serie.reelle.test), as.numeric(serie.synth.test))
+colnames(test.plot) <- c("Dates", "Synth", "Reelle") 
 
 
-ggplot(fra.plot, aes(Dates)) +
+ggplot(test.plot, aes(Dates)) +
   geom_line(aes(y = Synth), color = "blue") +
   geom_line(aes(y = Reelle), color = "red") +
   geom_hline(yintercept=(50),linetype="dotted")+
   xlab("Dates")+
-  ylab("Composite")
+  ylab("Composite")+
   theme_classic()
 
 #Axe d'amelioration : Lorsque je nomme les colonnes par seulement une lettre,
-  #j'obtiens un graph sur fond blanc (plus clean pour exporter)
-  
-  
-#Axe d'amelioration : Une fois que le code est termine, changer le code en y 
-  # integrant des variables generiques et expliquer en amont les donnees que 
-  #l'on doit attribuer aux variables pour effectuer les differents tests
-  
-# PARTIE 4 #
-  
-#Calcul de l'erreur quadratique moyenne entre la serie reelle et la serie 
-  #synthetisee
+#j'obtiens un graph sur fond blanc (plus clean pour exporter)
 
-mse <- (gaps.list.synth.fra)^2
+
+#Axe d'amelioration : Une fois que le code est termine, changer le code en y 
+# integrant des variables generiques et expliquer en amont les donnees que 
+#l'on doit attribuer aux variables pour effectuer les differents tests
+
+# PARTIE 4 #
+
+#Calcul de l'erreur quadratique moyenne entre la serie reelle et la serie 
+#synthetisee
+
+mse <- (gaps.list.synth.test)^2
 
 rmse<-0
 
-for (i in 1:244) {rmse<-rmse+mse[i]}
-rmse<-rmse/244
+a <- as.numeric(length(date.plot))
+
+for (i in 1:a) {rmse<-rmse+mse[i]}
+rmse<-rmse/a
 rmse<-sqrt(rmse)
 
-View(rmse)
+print(rmse)
 
 #L'erreur quadratique moyenne permet de comparer la precision de notre synthetisation 
 
 #Elle permet de comparer la surface entre entre la courbe de la serie synth 
 #et celle de la serie reelle
 
-#Axe d'amelioration : Il serait interessant de trouver un lien entre le rmse 
+# Axe d'amelioration : Interessant de rajouter une partie permettant de stocker
+#le rmse de chaque test dans une base de donnees 
+
+#Perspective de recherche : Il serait interessant de trouver un lien entre le rmse 
 #lors de la creation de notre serie synthetique et le rmse de estimation du PIB
 
 
+
+#Suppression des objets servant a la construction (inutiles pour l'analyse)
+
+rm(a)
+rm(date.plot)
+rm(i)
+rm(timeplot)
+rm(mse)
+
+#Suppression de tous les objets intermediaires
+
+rm(ecart.test.plot)
+rm(gaps.list.synth.test)
+rm(list.synth.test)
+rm(serie.reelle.test)
+rm(serie.synth.test)
+rm(test)
+rm(test.plot)
+
 ###########################################################
 ###########################################################
 ###########################################################
 
 
-                 ### CONCLUSION ###
+### CONCLUSION ###
 
 
 ###########################################################
@@ -230,6 +260,4 @@ View(rmse)
 #  - Tester d'autres algo d'optimisation que le "BFGS"
 
 #Ne pas oublier de supprimer tous les objets qui ne servent qu'a la construction
-
-
 
